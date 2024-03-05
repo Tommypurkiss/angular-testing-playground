@@ -5,3 +5,53 @@ html, body {
     margin: 0;
     box-sizing: border-box;
 }
+
+.container {
+    height: 100%;
+    width: 100%;
+    border: 1px solid black;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-1 {
+    flex: 1;
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
+.center {
+    justify-content: center;
+}
+
+.w-full {
+    width: 100%;
+}
+
+.w-50 {
+    width: 50%;
+}
+
+.w-33 {
+    width: 33.33%;
+}
+
+.txt-center {
+    text-align: center;
+}
+
+.card {
+    padding: 4px;
+    border: 1px solid lightgrey;
+    border-radius: 4px;
+}
+
+
+
+.bd-1-solid {
+    border: 1px solid black;
+}
