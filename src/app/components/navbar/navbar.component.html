@@ -1,6 +1,6 @@
 <div class="container">
     <ng-container *ngIf="authService.user$ | async; else nonLoggedInUser">
-        <button (click)="onSignOut()">logout</button>
+        <button style="padding: 4px; margin: 8px;" (click)="onSignOut()">logout</button>
     </ng-container>
     <ng-template #nonLoggedInUser>
         <ul>

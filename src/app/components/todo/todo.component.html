@@ -1,1 +1,13 @@
 <p>todo works!</p>
+<div>
+    <input type="text" [(ngModel)]="todo" />
+    <button (click)="addTodo()">Add</button>
+</div>
+
+
+<ng-container *ngIf="todos$ | async as todos">
+    <div *ngFor="let todo of todos">
+        <span>{{todo.value}}</span>
+        <!-- <button (click)="remove(todo)">Remove</button> -->
+    </div>
+</ng-container>

@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../auth/auth.service';
+import { modules } from '../../modules/modules';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule],
+  imports: [modules],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
