@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -10,79 +10,28 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, si
   styleUrl: './login.component.scss'
 })
 export class LoginComponent {
-    isEmailError = false
+
     loginEmail: string = ''
     loginPassword: string = ''
 
     registerEmail: string = ''
     registerPassword: string = ''
 
-    constructor() {}
+    constructor(
+        private authService: AuthService
+    ) {}
 
     registerWithEmailAndPassword() {
-        const auth = getAuth();
-        createUserWithEmailAndPassword(auth, this.registerEmail, this.registerPassword)
-        .then((userCredential) => {
-            // Signed up
-            const user = userCredential.user;
-            console.log('user', user)
-        })
-        .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.log(
-                [errorCode, errorMessage]
-            )
-        });
+        this.authService.registerWithEmailAndPassword(this.registerEmail, this.registerPassword)
     }
 
     signInEmailAndPassword() {
-        const auth = getAuth();
-        console.log('auth', auth)
-        signInWithEmailAndPassword(auth, this.loginEmail, this.loginPassword)
-        .then((userCredential) => {
-            // Signed in
-            const user = userCredential.user;
-            console.log('user', user)
-
-            // ...
-        })
-        .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.log(
-                [errorCode, errorMessage]
-            )
-        });
+        this.authService.loginWithEmailAndPassword(this.loginEmail, this.loginPassword)
     }
 
     onSignOut() {
-        const auth = getAuth();
-        signOut(auth).then(() => {
-        // Sign-out successful.
-        console.log('Sign-out successful.')
-        }).catch((error) => {
-        // An error happened.
-        console.log('error signing out', error)
-        });
+        this.authService.logout()
     }
 
-    onGetAuth() {
-        const auth = getAuth();
-        console.log('auth', auth)
-    }
-
-    signInWithEmail() {
-        console.log('userEmailInput' , this.loginEmail)
-        // if(!this.isEmailValid) {
-        //     this.isEmailError = true
-        //     return
-        // }
-
-    }
-
-    // isEmailValid(): boolean {
-    //     return this.userEmailInput.includes('@')
-    // }
 
 }
