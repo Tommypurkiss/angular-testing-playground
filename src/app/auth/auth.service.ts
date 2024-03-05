@@ -25,6 +25,7 @@ export class AuthService {
     } else {
         console.log('User is signed out', this.auth.currentUser)
         this.user$ = of(null)
+        this.router.navigate(['/landing'])
     }
     });
   }

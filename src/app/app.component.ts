@@ -19,5 +19,15 @@ export class AppComponent {
 
   ) {
     initializeApp(environment.firebaseConfig);
+
+    window.addEventListener("offline", (event) => {
+        console.log("The network connection has been lost.");
+    });
+
+    window.addEventListener("online", (event) => {
+        console.log("The network connection has been found.");
+    })
   }
+
+
 }
