@@ -1,7 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-// import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { User } from '../../interfaces/user';
-import { Firestore, addDoc, collection } from '@angular/fire/firestore';
+import { Firestore, collection, setDoc, doc, getDoc } from '@angular/fire/firestore';
 
 
 @Injectable({
@@ -13,20 +12,19 @@ export class UserService {
   constructor() {}
 
   async createUser(userData: User) {
-    // this.angularFirestore.collection('users').doc(userData.uid).set(userData)
-    //   .then(() => {
-    //     console.log('User data added successfully:', userData);
-    //   })
-    //   .catch((error) => {
-    //     console.error('Error adding user data:', error);
-    //   });
     const userCollection = collection(this.firestore, 'users')
-    const result = await addDoc(userCollection, userData)
-    console.log('User data added successfully:', result);
+
+    // Allows us to set the document id to the user's uid - doesn't return a value
+    await setDoc(doc(userCollection, userData.uid), userData)
+    console.log('User data added successfully');
 
   }
 
-  getUser() {
+  async getUser(userId: string): Promise<User> {
     // Add implementation to get user data if needed
+    const userCollection = collection(this.firestore, 'users')
+    const userDoc = (await getDoc(doc(userCollection, userId))).data() as User
+    console.log('User data retrieved successfully', userDoc);
+    return userDoc
   }
 }

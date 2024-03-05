@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
-import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { UserService } from '../services/user/user.service';
 import { User } from '../interfaces/user';
+import { Router } from '@angular/router';
+import { Observable, from, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +11,23 @@ import { User } from '../interfaces/user';
 export class AuthService {
   auth = getAuth();
 
-  constructor(private userService: UserService) {}
+  user$: Observable<User | null> = of(null)
+
+  constructor(
+    private userService: UserService,
+    private router: Router,
+) {
+
+    onAuthStateChanged(this.auth, (user) => {
+    if (user) {
+        const userData = this.userService.getUser(user.uid)
+        this.user$ = from(userData)
+    } else {
+        console.log('User is signed out', this.auth.currentUser)
+        this.user$ = of(null)
+    }
+    });
+  }
 
   registerWithEmailAndPassword(email: string, password: string) {
     createUserWithEmailAndPassword(this.auth, email, password)
@@ -31,7 +49,7 @@ export class AuthService {
   loginWithEmailAndPassword(email: string, password: string) {
     signInWithEmailAndPassword(this.auth, email, password)
       .then((userCredential) => {
-        console.log('User logged in:', userCredential.user);
+        this.router.navigate(['/dashboard'])
       })
       .catch((error) => {
         console.log(error.code, error.message);
@@ -42,6 +60,7 @@ export class AuthService {
     signOut(this.auth)
       .then(() => {
         console.log('User logged out successfully.');
+        this.router.navigate(['/landing'])
       })
       .catch((error) => {
         console.log('Error logging out:', error);
