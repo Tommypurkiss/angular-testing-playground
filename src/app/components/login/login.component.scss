@@ -1,0 +1,17 @@
+.container {
+    height: 100%;
+    width: 100%;
+    border: 1px solid black;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
+.center {
+    justify-content: center;
+}
