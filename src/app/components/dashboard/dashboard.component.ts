@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../auth/auth.service';
+import { TodoComponent } from '../todo/todo.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [],
+  imports: [TodoComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
