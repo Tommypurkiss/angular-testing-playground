@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "angular-testing-playground": {
+      "hosting": {
+        "angular-testing-playground": [
+          "angular-testing-playground"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "angular-testing-playground"
+  }
+}
