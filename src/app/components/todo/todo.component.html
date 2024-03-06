@@ -7,11 +7,9 @@
 
 <ng-container *ngIf="todos$ | async as todos">
     <div *ngFor="let todo of todos">
-        <div style="height: 30px; width: 100px; border: 1px solid black;">
+        <div style="padding: 12px; border: 1px solid black;">
             <span>{{todo.value}}</span>
             <button (click)="deleteTodo(todo.id)">Delete</button>
-
         </div>
-        <!-- <button (click)="remove(todo)">Remove</button> -->
     </div>
 </ng-container>

@@ -11,3 +11,9 @@ export interface Todo {
     completed?: boolean
     completedAt?: Timestamp
 }
+
+export interface OfflineTodo {
+    value: string
+    userId: string
+    id?: string
+}

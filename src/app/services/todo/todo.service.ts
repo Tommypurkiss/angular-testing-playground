@@ -2,17 +2,7 @@ import { Injectable, OnInit, inject } from '@angular/core';
 import { UserService } from '../user/user.service';
 import { AuthService } from '../../auth/auth.service';
 import { User } from '../../interfaces/user';
-import {
-  Observable,
-  combineLatest,
-  filter,
-  from,
-  map,
-  of,
-  switchMap,
-  take,
-  tap,
-} from 'rxjs';
+import { Observable, of, switchMap } from 'rxjs';
 import { getAuth } from 'firebase/auth';
 import {
   Firestore,
@@ -20,11 +10,10 @@ import {
   collection,
   deleteDoc,
   doc,
-  getDocs,
   onSnapshot,
 } from '@angular/fire/firestore';
-import { Todo } from '../../interfaces/todo';
-import { getDoc } from '@firebase/firestore';
+import { OfflineTodo, Todo } from '../../interfaces/todo';
+import { IndexedDbService } from '../indexedDb/indexed-db.service';
 
 @Injectable({
   providedIn: 'root',
@@ -36,11 +25,10 @@ export class TodoService {
 
   constructor(
     private authService: AuthService,
+    private indexedDbService: IndexedDbService
   ) {}
 
   async addTodo(todoValue: string) {
-    console.log('add todo');
-
     const todoData: Todo = { value: todoValue };
 
     const uid = getAuth().currentUser?.uid;
@@ -48,7 +36,6 @@ export class TodoService {
       const userDoc = doc(collection(this.firestore, 'users'), uid);
       const todoCollection = collection(userDoc, 'todos');
       const todoDoc = await addDoc(todoCollection, todoData);
-      console.log('tododoc', todoDoc);
     }
   }
 
@@ -57,7 +44,6 @@ export class TodoService {
   }
 
   async deleteTodo(todoId: string) {
-    console.log('delete todo');
     const uid = getAuth().currentUser?.uid;
     if (uid) {
       const userDoc = doc(collection(this.firestore, 'users'), uid);
@@ -71,8 +57,6 @@ export class TodoService {
   }
 
   getTodos(): Observable<Todo[]> {
-    console.log('get todos');
-
     return this.authService.user$.pipe(
       switchMap((auth) => {
         if (!auth) {
@@ -90,7 +74,7 @@ export class TodoService {
             const unsubscribe = onSnapshot(userDoc, (querySnapshot) => {
               const todos: Todo[] = [];
               querySnapshot.forEach((doc) => {
-                todos.push({...doc.data(), id: doc.id} as Todo);
+                todos.push({ ...doc.data(), id: doc.id } as Todo);
               });
               observer.next(todos);
             });
@@ -100,5 +84,44 @@ export class TodoService {
         }
       })
     );
+  }
+
+  //   OFFLINE STUFF
+  async addTodoOffline(todo: Todo) {
+    const userId = await this.getAuthUserId();
+    if (userId) {
+      const offlineTodo: OfflineTodo = { ...todo, userId: userId };
+      this.indexedDbService.addTodo(offlineTodo);
+    }
+  }
+
+  async getAuthUserId() {
+    const currentAuthUser = this.authService.auth;
+    console.log(
+      'addTodoOffline - currentAuthUser',
+      currentAuthUser?.currentUser?.uid
+    );
+    const userId = currentAuthUser?.currentUser?.uid;
+    return userId;
+  }
+
+
+  syncOfflineTodos() {
+    this.indexedDbService.getAllOfflineTodos().then((offlineTodos) => {
+      console.log('offlineTodos', offlineTodos);
+      offlineTodos.forEach(async (offlineTodo) => {
+        console.log('offlineTodo', offlineTodo);
+        // this.addTodoOffline(offlineTodo);
+        const uid = getAuth().currentUser?.uid;
+        if (uid) {
+        //   const userDoc = doc(collection(this.firestore, 'users'), uid);
+          const todoCollection = collection(this.firestore, 'offlineTodos');
+          const todoDoc = await addDoc(todoCollection, offlineTodo);
+          console.log('todoDoc', todoDoc);
+        }
+
+      });
+    });
+    this.indexedDbService.deleteAllTodos();
   }
 }
