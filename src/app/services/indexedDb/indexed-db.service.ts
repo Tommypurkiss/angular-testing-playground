@@ -62,7 +62,6 @@ export class IndexedDbService {
     return 'indexedDB' in window;
   }
 
-
   async getAllOfflineTodos(): Promise<OfflineTodo[]> {
     // Ensure the database is initialized
     if (!this.db) {
@@ -86,7 +85,7 @@ export class IndexedDbService {
     });
   }
 
- async deleteAllTodos() {
+  async deleteAllTodos() {
     if (!this.db) {
       throw new Error('Database not initialized. Call createDatabase first.');
     }
@@ -108,5 +107,16 @@ export class IndexedDbService {
     request.onerror = (err: any) => {
       console.error('Error deleting todos:', err);
     };
+  }
+
+  //   TESTING
+  async logIndexedDb() {
+    await this.createDatabase();
+    console.log('logIndexedDb', this.db);
+
+    const transaction = this.db.transaction('todo', 'readwrite');
+    console.log('transaction', transaction);
+    const objectStore = transaction.objectStore('todo');
+    console.log('objectStore', objectStore);
   }
 }

@@ -4,6 +4,7 @@ import { TodoService } from '../../services/todo/todo.service';
 import { Observable, of } from 'rxjs';
 import { Todo } from '../../interfaces/todo';
 import { getAuth } from 'firebase/auth';
+import { IndexedDbService } from '../../services/indexedDb/indexed-db.service';
 
 @Component({
   selector: 'app-todo',
@@ -17,24 +18,34 @@ export class TodoComponent implements OnInit {
 
   todos$: Observable<any> = of([]);
 
-  constructor(private todoService: TodoService) {
+  constructor(private todoService: TodoService, private indexedDbService: IndexedDbService) {
     this.todos$ = this.todoService.getTodos(); // Initialize todos$ in the constructor
   }
 
   ngOnInit() {}
 
-  async addTodo() {
+  async addTodo(): Promise<void> {
     if (this.todo === '') return
     const todo: Todo = { value: this.todo };
     await this.todoService.addTodo(todo);
     this.todo = '';
   }
 
-  getTodos() {
+  completeTodo(event: Event, todoId: string) {
+    // console.log(event);
+    const isChecked = (event.target as HTMLInputElement).checked;
+    this.todoService.completeTodo(isChecked, todoId);
+  }
+
+  getTodos(): void {
     this.todos$ = this.todoService.getTodos();
   }
 
-  deleteTodo(todoId:string) {
+  deleteTodo(todoId:string): void {
     this.todoService.deleteTodo(todoId);
+  }
+
+  async logIndexedDb() {
+    await this.indexedDbService.logIndexedDb();
   }
  }

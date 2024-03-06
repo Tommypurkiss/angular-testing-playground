@@ -11,10 +11,15 @@
         <ng-container *ngIf="todos$ | async as todos">
             <div style="padding-top: 12px;" *ngFor="let todo of todos">
                 <div style="padding: 12px; border: 1px solid lightgrey; border-radius: 8px;" class="flex space-between">
-                    <span class="w-full">{{todo.value}}</span>
+                    <input class="checkbox" type="checkbox" [checked]="todo.completed" (change)="completeTodo($event, todo.id)">
+                    <span class="w-full flex align-center" [style.textDecoration]="todo.completed ? 'line-through' : 'none'">{{todo.value}}</span>
                     <button (click)="deleteTodo(todo.id)">Delete</button>
                 </div>
             </div>
         </ng-container>
+
+        <div style="padding-top: 12px;">
+            <button class="submit" (click)="logIndexedDb()">logIndexedDb</button>
+        </div>
     </div>
 </div>

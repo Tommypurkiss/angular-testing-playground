@@ -14,7 +14,7 @@ import {
 } from '@angular/fire/firestore';
 import { OfflineTodo, Todo } from '../../interfaces/todo';
 import { IndexedDbService } from '../indexedDb/indexed-db.service';
-import { getDocs, query, where } from '@firebase/firestore';
+import { getDocs, query, updateDoc, where } from '@firebase/firestore';
 
 @Injectable({
   providedIn: 'root',
@@ -61,9 +61,19 @@ export class TodoService {
     }
   }
 
-  completeTodo() {
+  completeTodo( isChecked: boolean, todoId: string) {
+    console.log('isChecked', isChecked);
     console.log('complete todo');
+    const uid = getAuth().currentUser?.uid;
+
+    if (uid) {
+        const userDoc = doc(collection(this.firestore, 'users'), uid);
+        const todoDoc = doc(collection(userDoc, 'todos'), todoId);
+        console.log('todoDoc', todoDoc);
+        updateDoc(todoDoc, { completed: isChecked })
+    }
   }
+
 
   getTodos(): Observable<Todo[]> {
     return this.authService.user$.pipe(
