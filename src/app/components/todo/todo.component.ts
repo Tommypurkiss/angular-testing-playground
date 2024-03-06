@@ -37,7 +37,6 @@ export class TodoComponent implements OnInit {
   }
 
   completeTodo(event: Event, todoId: string) {
-    // console.log(event);
     const isChecked = (event.target as HTMLInputElement).checked;
     this.todoService.completeTodo(isChecked, todoId);
   }

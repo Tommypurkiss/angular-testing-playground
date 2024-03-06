@@ -25,3 +25,13 @@ input {
     width: auto;
     margin: 0px 4px 0px 0px;
 }
+
+.todo-container {
+    display: inline-block; /* Ensures that text-overflow works properly */
+    max-width: 80%; /* Set a maximum width to enable text-overflow */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+
+}

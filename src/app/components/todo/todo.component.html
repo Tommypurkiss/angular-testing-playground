@@ -15,12 +15,13 @@
                     <ng-container *ngIf="isEditing && todo.id === selectedTodoId; else nonEditing">
                         <input type="text" [(ngModel)]="updatedTodo">
                         <button (click)="editTodo(todo.id)">Save todo</button>
+                        <button (click)="toggleEditTodo(todo.id)">X</button>
                     </ng-container>
                     <ng-template #nonEditing>
-                        <span class="w-full flex align-center" [style.textDecoration]="todo.completed ? 'line-through' : 'none'">{{todo.value}}</span>
+                        <span class="w-full todo-container" [style.textDecoration]="todo.completed ? 'line-through' : 'none'">{{todo.value}}</span>
                         <button (click)="toggleEditTodo(todo.id)">Edit</button>
+                        <button (click)="deleteTodo(todo.id)">Delete</button>
                     </ng-template>
-                    <button (click)="deleteTodo(todo.id)">Delete</button>
                 </div>
             </div>
         </ng-container>
