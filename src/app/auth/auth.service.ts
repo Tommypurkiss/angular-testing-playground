@@ -10,24 +10,29 @@ import { Observable, from, of } from 'rxjs';
 })
 export class AuthService {
   auth = getAuth();
-
-  user$: Observable<User | null> = of(null)
+  user$: Observable<User | null>;
 
   constructor(
     private userService: UserService,
     private router: Router,
-) {
-
-    onAuthStateChanged(this.auth, (user) => {
-    if (user) {
-        const userData = this.userService.getUser(user.uid)
-        this.user$ = from(userData)
-    } else {
-        console.log('User is signed out', this.auth.currentUser)
-        this.user$ = of(null)
-        this.router.navigate(['/landing'])
-    }
+  ) {
+    this.user$ = new Observable<User | null>((observer) => {
+      const unsubscribe = onAuthStateChanged(this.auth, async (user) => {
+        if (user) {
+          console.log('User is signed in', user.uid);
+          const userData = await this.userService.getUser(user.uid);
+          observer.next(userData);
+        } else {
+          console.log('User is signed out');
+          observer.next(null);
+        }
+      });
+      return () => unsubscribe();
     });
+  }
+
+  isLoggedIn(): boolean {
+    return !!this.auth.currentUser;
   }
 
   registerWithEmailAndPassword(email: string, password: string) {
@@ -50,7 +55,8 @@ export class AuthService {
   loginWithEmailAndPassword(email: string, password: string) {
     signInWithEmailAndPassword(this.auth, email, password)
       .then((userCredential) => {
-        this.router.navigate(['/dashboard'])
+        console.log('User logged in successfully.', userCredential.user.uid);
+        this.router.navigate(['/dashboard']);
       })
       .catch((error) => {
         console.log(error.code, error.message);
@@ -61,7 +67,7 @@ export class AuthService {
     signOut(this.auth)
       .then(() => {
         console.log('User logged out successfully.');
-        this.router.navigate(['/landing'])
+        this.router.navigate(['/landing']);
       })
       .catch((error) => {
         console.log('Error logging out:', error);

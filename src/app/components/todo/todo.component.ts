@@ -1,27 +1,37 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { modules } from '../../modules/modules';
 import { TodoService } from '../../services/todo/todo.service';
 import { Observable, of } from 'rxjs';
 import { Todo } from '../../interfaces/todo';
+import { getAuth } from 'firebase/auth';
 
 @Component({
   selector: 'app-todo',
   standalone: true,
   imports: [modules],
   templateUrl: './todo.component.html',
-  styleUrl: './todo.component.scss'
+  styleUrl: './todo.component.scss',
 })
-export class TodoComponent {
-    todo: string = ''
+export class TodoComponent implements OnInit {
+  todo: string = '';
 
-    todos$: Observable<Todo[]> = of([])
+  todos$: Observable<any> = of([]);
 
-    constructor(
-        private todoService: TodoService
-    ) {}
+  constructor(private todoService: TodoService) {
+    this.todos$ = this.todoService.getTodos(); // Initialize todos$ in the constructor
+  }
 
-    async addTodo() {
-        await this.todoService.addTodo(this.todo)
-    }
+  ngOnInit() {}
 
-}
+  async addTodo() {
+    await this.todoService.addTodo(this.todo);
+  }
+
+  getTodos() {
+    this.todos$ = this.todoService.getTodos();
+  }
+
+  deleteTodo(todoId:string) {
+    this.todoService.deleteTodo(todoId);
+  }
+ }
