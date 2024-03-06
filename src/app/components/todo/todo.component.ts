@@ -25,7 +25,9 @@ export class TodoComponent implements OnInit {
 
   async addTodo() {
     if (this.todo === '') return
-    await this.todoService.addTodo(this.todo);
+    const todo: Todo = { value: this.todo };
+    await this.todoService.addTodo(todo);
+    this.todo = '';
   }
 
   getTodos() {

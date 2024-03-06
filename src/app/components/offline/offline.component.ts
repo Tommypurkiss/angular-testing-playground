@@ -24,6 +24,6 @@ export class OfflineComponent {
     console.log('create offline todo');
     const todoValue: Todo = {value: this.offlineTodo}; // Get the todo value from user input or any other source
     this.todoService.addTodoOffline(todoValue);
-
+    this.offlineTodo = '';
   }
 }

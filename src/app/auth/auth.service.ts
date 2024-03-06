@@ -19,11 +19,11 @@ export class AuthService {
     this.user$ = new Observable<User | null>((observer) => {
       const unsubscribe = onAuthStateChanged(this.auth, async (user) => {
         if (user) {
-          console.log('User is signed in', user.uid);
+        //   console.log('User is signed in', user.uid);
           const userData = await this.userService.getUser(user.uid);
           observer.next(userData);
         } else {
-          console.log('User is signed out');
+        //   console.log('User is signed out');
           observer.next(null);
         }
       });
@@ -55,7 +55,7 @@ export class AuthService {
   loginWithEmailAndPassword(email: string, password: string) {
     signInWithEmailAndPassword(this.auth, email, password)
       .then((userCredential) => {
-        console.log('User logged in successfully.', userCredential.user.uid);
+        // console.log('User logged in successfully.', userCredential.user.uid);
         this.router.navigate(['/dashboard']);
       })
       .catch((error) => {
@@ -66,7 +66,7 @@ export class AuthService {
   logout() {
     signOut(this.auth)
       .then(() => {
-        console.log('User logged out successfully.');
+        // console.log('User logged out successfully.');
         this.router.navigate(['/landing']);
       })
       .catch((error) => {

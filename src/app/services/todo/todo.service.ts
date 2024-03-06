@@ -14,6 +14,7 @@ import {
 } from '@angular/fire/firestore';
 import { OfflineTodo, Todo } from '../../interfaces/todo';
 import { IndexedDbService } from '../indexedDb/indexed-db.service';
+import { getDocs, query, where } from '@firebase/firestore';
 
 @Injectable({
   providedIn: 'root',
@@ -28,8 +29,7 @@ export class TodoService {
     private indexedDbService: IndexedDbService
   ) {}
 
-  async addTodo(todoValue: string) {
-    const todoData: Todo = { value: todoValue };
+  async addTodo(todoData: Todo) {
 
     const uid = getAuth().currentUser?.uid;
     if (uid) {
@@ -48,6 +48,15 @@ export class TodoService {
     if (uid) {
       const userDoc = doc(collection(this.firestore, 'users'), uid);
       const todoDoc = doc(collection(userDoc, 'todos'), todoId);
+      await deleteDoc(todoDoc);
+    }
+  }
+
+  async deleteOfflineTodo(todoId: string) {
+    const uid = getAuth().currentUser?.uid;
+    if (uid) {
+      const todoDoc = doc(collection(this.firestore, 'offlineTodos'), todoId);
+      console.log('deleteOfflineTodo - deleting offline todo', todoDoc, todoId)
       await deleteDoc(todoDoc);
     }
   }
@@ -111,10 +120,8 @@ export class TodoService {
       console.log('offlineTodos', offlineTodos);
       offlineTodos.forEach(async (offlineTodo) => {
         console.log('offlineTodo', offlineTodo);
-        // this.addTodoOffline(offlineTodo);
         const uid = getAuth().currentUser?.uid;
         if (uid) {
-        //   const userDoc = doc(collection(this.firestore, 'users'), uid);
           const todoCollection = collection(this.firestore, 'offlineTodos');
           const todoDoc = await addDoc(todoCollection, offlineTodo);
           console.log('todoDoc', todoDoc);
@@ -123,5 +130,19 @@ export class TodoService {
       });
     });
     this.indexedDbService.deleteAllTodos();
+  }
+
+  async getOfflineTodosByUserId(userId: string) {
+    const offlineTodoCollection = collection(this.firestore, 'offlineTodos');
+    const userQuery = query(offlineTodoCollection, where('userId', '==', userId));
+    const docs = (await getDocs(userQuery)).docs
+    console.log('docs', docs);
+    return of(docs)
+    // console.log('userQuery', userQuery);
+    // return getDocs(userQuery).pipe(
+    //   map(snapshot => {
+    //     return snapshot.docs.map(doc => doc.data() as Todo);
+    //   })
+    // );
   }
 }
