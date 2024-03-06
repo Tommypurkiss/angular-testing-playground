@@ -15,17 +15,22 @@ import { IndexedDbService } from '../../services/indexedDb/indexed-db.service';
 })
 export class TodoComponent implements OnInit {
   todo: string = '';
-
+  updatedTodo: string = '';
+  selectedTodoId: string = '';
   todos$: Observable<any> = of([]);
+  isEditing: boolean = false;
 
-  constructor(private todoService: TodoService, private indexedDbService: IndexedDbService) {
+  constructor(
+    private todoService: TodoService,
+    private indexedDbService: IndexedDbService
+  ) {
     this.todos$ = this.todoService.getTodos(); // Initialize todos$ in the constructor
   }
 
   ngOnInit() {}
 
   async addTodo(): Promise<void> {
-    if (this.todo === '') return
+    if (this.todo === '') return;
     const todo: Todo = { value: this.todo };
     await this.todoService.addTodo(todo);
     this.todo = '';
@@ -41,11 +46,22 @@ export class TodoComponent implements OnInit {
     this.todos$ = this.todoService.getTodos();
   }
 
-  deleteTodo(todoId:string): void {
+  toggleEditTodo(todoId: string): void {
+    this.isEditing = !this.isEditing;
+    this.selectedTodoId = todoId;
+  }
+
+  editTodo(todoId: string): void {
+    this.isEditing = !this.isEditing;
+    this.todoService.editTodo(todoId, this.updatedTodo);
+
+  }
+
+  deleteTodo(todoId: string): void {
     this.todoService.deleteTodo(todoId);
   }
 
   async logIndexedDb() {
     await this.indexedDbService.logIndexedDb();
   }
- }
+}

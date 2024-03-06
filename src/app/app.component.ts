@@ -20,7 +20,7 @@ import { OfflineTodo } from './interfaces/todo';
 export class AppComponent {
   title = 'angular-testing-playground';
   userHasOfflineTodos: boolean = false;
-  userHasOfflineTodosMessage = ''
+  userHasOfflineTodosMessage = '';
 
   constructor(
     private router: Router,
@@ -67,8 +67,10 @@ export class AppComponent {
           map((todos) => {
             // console.log('todos', todos);
             if (todos.length > 0) {
-                this.userHasOfflineTodosMessage = `You have ${todos.length} todos to upload, would you like to upload them now?`
+              this.userHasOfflineTodosMessage = `You have ${todos.length} todos to upload, would you like to upload them now?`;
               this.userHasOfflineTodos = true;
+            } else {
+                this.userHasOfflineTodos = false;
             }
           })
         )
@@ -81,30 +83,32 @@ export class AppComponent {
     const uid = await this.getAuthUserId();
     if (uid) {
       const res = await this.todoService.getOfflineTodosByUserId(uid);
-      res.pipe(
-        map(async (todos) => {
+      res
+        .pipe(
+          map(async (todos) => {
             console.log('todos 1', todos);
-            const offlineTodoIds = todos.map(todo => todo.id);
+            const offlineTodoIds = todos.map((todo) => todo.id);
             for (const todo of todos) {
-                console.log('adding offline to user')
-                const offlineTodoData = todo.data() as OfflineTodo;
-                console.log('offlineTodoData', offlineTodoData);
-                console.log('todo.id',todo.id)
-                const todoData = {
-                  value: offlineTodoData.value,
-                  userId: offlineTodoData.userId,
-                };
-                await this.todoService.addTodo(todoData);
+              console.log('adding offline to user');
+              const offlineTodoData = todo.data() as OfflineTodo;
+              console.log('offlineTodoData', offlineTodoData);
+              console.log('todo.id', todo.id);
+              const todoData = {
+                value: offlineTodoData.value,
+                userId: offlineTodoData.userId,
+              };
+              await this.todoService.addTodo(todoData);
             }
 
             for (const id of offlineTodoIds) {
-                console.log('deleting offline todo')
-                await this.todoService.deleteOfflineTodo(id);
-
+              console.log('deleting offline todo');
+              await this.todoService.deleteOfflineTodo(id);
             }
 
-        }),
-      ).subscribe();
+            this.userHasOfflineTodosToSubmit()
+          })
+        )
+        .subscribe();
     }
   }
 

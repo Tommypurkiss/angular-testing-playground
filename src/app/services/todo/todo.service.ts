@@ -39,8 +39,16 @@ export class TodoService {
     }
   }
 
-  editTodo() {
+  editTodo(todoId: string, updatedValue: string) {
     console.log('edit todo');
+    const uid = getAuth().currentUser?.uid;
+
+    if (uid) {
+        const userDoc = doc(collection(this.firestore, 'users'), uid);
+        const todoDoc = doc(collection(userDoc, 'todos'), todoId);
+        console.log('todoDoc', todoDoc);
+        updateDoc(todoDoc, { value: updatedValue })
+    }
   }
 
   async deleteTodo(todoId: string) {
