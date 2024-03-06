@@ -1,15 +1,20 @@
-<p>todo works!</p>
-<div>
-    <input type="text" [(ngModel)]="todo" />
-    <button (click)="addTodo()">Add</button>
-</div>
+<div class="container flex center ">
 
+    <div class="flex flex-col center w-50">
 
-<ng-container *ngIf="todos$ | async as todos">
-    <div *ngFor="let todo of todos">
-        <div style="padding: 12px; border: 1px solid black;">
-            <span>{{todo.value}}</span>
-            <button (click)="deleteTodo(todo.id)">Delete</button>
+        <div class="flex flex-col center">
+            <input type="text" placeholder="enter todo here" [(ngModel)]="todo" />
+            <button class="submit" (click)="addTodo()">Add</button>
         </div>
+
+
+        <ng-container *ngIf="todos$ | async as todos">
+            <div style="padding-top: 12px;" *ngFor="let todo of todos">
+                <div style="padding: 12px; border: 1px solid lightgrey; border-radius: 8px;" class="flex space-between">
+                    <span class="w-full">{{todo.value}}</span>
+                    <button (click)="deleteTodo(todo.id)">Delete</button>
+                </div>
+            </div>
+        </ng-container>
     </div>
-</ng-container>
+</div>

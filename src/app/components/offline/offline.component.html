@@ -1,10 +1,14 @@
-<p>offline works!</p>
 
+<div class="container flex center ">
 
-<p>You are offline!</p>
+    <div class="flex flex-col center w-50">
+        <p>Oops! you are offline!</p>
 
+        <div class="flex flex-col center">
+            <input type="text" placeholder="enter todo here" [(ngModel)]="offlineTodo" />
+            <button class="submit" (click)="createTodo()">Add</button>
+        </div>
 
-<div>
-    <input type="text" [(ngModel)]="offlineTodo" />
-    <button (click)="createTodo()">Add</button>
+    </div>
 </div>
+

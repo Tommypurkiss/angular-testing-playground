@@ -24,6 +24,7 @@ export class TodoComponent implements OnInit {
   ngOnInit() {}
 
   async addTodo() {
+    if (this.todo === '') return
     await this.todoService.addTodo(this.todo);
   }
 
