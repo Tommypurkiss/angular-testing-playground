@@ -32,15 +32,11 @@ export class AuthService {
     });
   }
 
-  get windowRef(){
-    return window
-}
-
   isLoggedIn(): boolean {
     return !!this.auth.currentUser;
   }
 
-  registerWithEmailAndPassword(email: string, password: string) {
+  registerWithEmailAndPassword(email: string, password: string): void {
     createUserWithEmailAndPassword(this.auth, email, password)
       .then(async (userCredential) => {
         const user = userCredential.user;
@@ -48,8 +44,10 @@ export class AuthService {
           email: '',
           uid: user.uid
         };
+
         if (user.email) userData.email = user.email;
         if (user.displayName) userData.displayName = user.displayName;
+
         await this.userService.createUser(userData);
       })
       .catch((error) => {
@@ -57,7 +55,7 @@ export class AuthService {
       });
   }
 
-  loginWithEmailAndPassword(email: string, password: string) {
+  loginWithEmailAndPassword(email: string, password: string): void {
     signInWithEmailAndPassword(this.auth, email, password)
       .then((userCredential) => {
         this.router.navigate(['/dashboard']);
@@ -67,7 +65,8 @@ export class AuthService {
       });
   }
 
-  loginWithPhoneNumber$(phoneNumber: string):Observable<boolean> {
+  loginWithPhoneNumber$(phoneNumber: string): Observable<boolean> {
+
     this.recaptchaVerifier = new RecaptchaVerifier(this.auth, 'recaptcha', {});
 
     return combineLatest(([this.recaptchaVerifier.verify()])).pipe(
@@ -77,10 +76,13 @@ export class AuthService {
   }
 
   onMobileSignInSubmit$(phoneNumber: string): Observable<boolean> {
+
     return defer(() => {
         if (!this.recaptchaVerifier) {
             return of(false)
           }
+        // console.log('phoneNumber', phoneNumber)
+        // console.log('this.recaptchaVerifier', this.recaptchaVerifier)
 
         return signInWithPhoneNumber(this.auth, phoneNumber, this.recaptchaVerifier)
         .then((confirmationResult) => {
@@ -96,7 +98,7 @@ export class AuthService {
     })
   }
 
-  confirmMobileSignIn(verificationCode: string, phoneNumber: string) {
+  confirmMobileSignIn(verificationCode: string, phoneNumber: string): void {
     if (!this.confirmationResult) {
       return;
     }
@@ -115,7 +117,7 @@ export class AuthService {
       this.router.navigate(['/dashboard']);
   }
 
-  logout() {
+  logout(): void {
     signOut(this.auth)
       .then(() => {
         // console.log('User logged out successfully.');
@@ -126,7 +128,7 @@ export class AuthService {
       });
   }
 
-  private async checkIfUserExists(userCredential: UserCredential, phoneNumber: string) {
+  private async checkIfUserExists(userCredential: UserCredential, phoneNumber: string): Promise<void> {
 
     const result = await this.userService.getUser(userCredential.user.uid)
 
@@ -137,7 +139,7 @@ export class AuthService {
             uid: userCredential.user.uid,
             phoneNumber: phoneNumber
         }
-        this.userService.createUser(userData)
+        await this.userService.createUser(userData)
 
     }
   }

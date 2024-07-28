@@ -26,11 +26,11 @@ export class LoginComponent {
         private authService: AuthService
     ) {}
 
-    signInEmailAndPassword() {
+    signInEmailAndPassword(): void {
         this.authService.loginWithEmailAndPassword(this.loginEmail, this.loginPassword)
     }
 
-    signInWithPhoneNumber() {
+    signInWithPhoneNumber(): void {
         this.authService.loginWithPhoneNumber$(this.loginPhoneNumber)
         .pipe(
             take(1),
@@ -38,7 +38,7 @@ export class LoginComponent {
         ).subscribe()
     }
 
-    confirmSignInWithPhoneNumber() {
+    confirmSignInWithPhoneNumber(): void {
         this.authService.confirmMobileSignIn(this.loginPhoneNumberCode, this.loginPhoneNumber)
     }
 
