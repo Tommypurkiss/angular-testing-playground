@@ -119,7 +119,7 @@ export class TodoService {
     const userId = await this.getAuthUserId();
     if (userId) {
       const offlineTodo: Todo = { ...todo, userId: userId };
-      db.todoItems.add(offlineTodo);
+    //   db.todoItems.add(offlineTodo);
     //   this.indexedDbService.addTodo(offlineTodo);
     }
   }
