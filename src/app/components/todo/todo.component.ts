@@ -3,8 +3,10 @@ import { modules } from '../../modules/modules';
 import { TodoService } from '../../services/todo/todo.service';
 import { Observable, of } from 'rxjs';
 import { Todo } from '../../interfaces/todo';
-import { getAuth } from 'firebase/auth';
+// import { getAuth } from 'firebase/auth';
 import { IndexedDbService } from '../../services/indexedDb/indexed-db.service';
+// import { db } from '../../services/indexedDb/dexie-db';
+// import { liveQuery } from 'dexie';
 
 @Component({
   selector: 'app-todo',
@@ -62,7 +64,7 @@ export class TodoComponent implements OnInit {
     this.todoService.deleteTodo(todoId);
   }
 
-  async logIndexedDb() {
-    await this.indexedDbService.logIndexedDb();
-  }
+//   async logIndexedDb() {
+//     await this.indexedDbService.logIndexedDb();
+//   }
 }

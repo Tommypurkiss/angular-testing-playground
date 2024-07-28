@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
-import { OfflineTodo, Todo } from '../../interfaces/todo';
-import { v4 as uuidv4 } from 'uuid';
+import { db } from './dexie-db';
+// import { OfflineTodo, Todo } from '../../interfaces/todo';
+// import { v4 as uuidv4 } from 'uuid';
+
 
 @Injectable({
   providedIn: 'root',
@@ -8,115 +10,140 @@ import { v4 as uuidv4 } from 'uuid';
 export class IndexedDbService {
   db: any;
 
-  constructor() {}
-
-  async createDatabase() {
-    if (!this.indexedDBSupport())
-      throw new Error("Your browser doesn't support IndexedDB");
-
-    if (!this.db) {
-      const request = window.indexedDB.open('MyDatabase', 1);
-
-      request.onerror = (e: any) => {
-        console.log('Error opening database:', e.target.error);
-      };
-
-      request.onsuccess = (e) => {
-        console.info('Successful database connection');
-        this.db = request.result;
-      };
-
-      request.onupgradeneeded = (e) => {
-        console.info('Database created');
-        const db = request.result;
-        db.createObjectStore('todo', { keyPath: 'id' });
-      };
-    }
+  constructor() {
   }
 
-  async addTodo(todo: OfflineTodo) {
-    console.log('add todo', todo);
+  /**
+   * OLD VERSION NOT USING DEXIE
+   */
 
-    if (!this.db) {
-      throw new Error('Database not initialized. Call createDatabase first.');
-    }
 
-    console.log('add this db', this.db);
+//   async createDatabase() {
+//     if (!this.indexedDBSupport())
+//       throw new Error("Your browser doesn't support IndexedDB");
 
-    const todoWithId = { ...todo, id: uuidv4() };
-    const transaction = this.db.transaction('todo', 'readwrite');
+//     if (!this.db) {
+//       const request = window.indexedDB.open('MyDatabase', 1);
 
-    const objectStore = transaction.objectStore('todo');
-    const request = objectStore.add(todoWithId);
+//       request.onerror = (e: any) => {
+//         console.log('Error opening database:', e.target.error);
+//       };
 
-    request.onsuccess = () => {
-      console.log(`New todo added: ${request.result}`);
-    };
+//       request.onsuccess = (e) => {
+//         console.info('Successful database connection');
+//         this.db = request.result;
+//       };
 
-    request.onerror = (err: any) => {
-      console.log(`Error adding new todo: ${err}`);
-    };
-  }
+//       request.onupgradeneeded = (e) => {
+//         console.info('Database created');
+//         const db = request.result;
+//         db.createObjectStore('todo', { keyPath: 'id' });
+//       };
+//     }
+//   }
 
-  indexedDBSupport() {
-    return 'indexedDB' in window;
-  }
+//   async addTodo(todo: OfflineTodo) {
+//     console.log('add todo', todo);
 
-  async getAllOfflineTodos(): Promise<OfflineTodo[]> {
-    // Ensure the database is initialized
-    if (!this.db) {
-      throw new Error('Database not initialized. Call createDatabase first.');
-    }
+//     if (!this.db) {
+//       throw new Error('Database not initialized. Call createDatabase first.');
+//     }
 
-    // Retrieve all todos from the object store
-    return new Promise((resolve, reject) => {
-      const transaction = this.db.transaction('todo', 'readonly');
-      const objectStore = transaction.objectStore('todo');
-      const request = objectStore.getAll();
+//     console.log('add this db', this.db);
 
-      request.onsuccess = () => {
-        const todos = request.result;
-        resolve(todos);
-      };
+//     const todoWithId = { ...todo, id: uuidv4() };
+//     const transaction = this.db.transaction('todo', 'readwrite');
 
-      request.onerror = (err: any) => {
-        reject(err);
-      };
-    });
-  }
+//     const objectStore = transaction.objectStore('todo');
+//     const request = objectStore.add(todoWithId);
 
-  async deleteAllTodos() {
-    if (!this.db) {
-      throw new Error('Database not initialized. Call createDatabase first.');
-    }
+//     request.onsuccess = () => {
+//       console.log(`New todo added: ${request.result}`);
+//     };
 
-    const transaction = this.db.transaction('todo', 'readwrite');
-    const objectStore = transaction.objectStore('todo');
-    const request = objectStore.openCursor();
+//     request.onerror = (err: any) => {
+//       console.log(`Error adding new todo: ${err}`);
+//     };
+//   }
 
-    request.onsuccess = (event: any) => {
-      const cursor = event.target.result;
-      if (cursor) {
-        objectStore.delete(cursor.primaryKey);
-        cursor.continue();
-      } else {
-        console.log('All todos deleted successfully.');
-      }
-    };
+//   indexedDBSupport() {
+//     return 'indexedDB' in window;
+//   }
 
-    request.onerror = (err: any) => {
-      console.error('Error deleting todos:', err);
-    };
-  }
+//   async getAllOfflineTodos(): Promise<OfflineTodo[]> {
+//     // Ensure the database is initialized
+//     if (!this.db) {
+//       throw new Error('Database not initialized. Call createDatabase first.');
+//     }
 
-  //   TESTING
-  async logIndexedDb() {
-    await this.createDatabase();
-    console.log('logIndexedDb', this.db);
+//     // Retrieve all todos from the object store
+//     return new Promise((resolve, reject) => {
+//       const transaction = this.db.transaction('todo', 'readonly');
+//       const objectStore = transaction.objectStore('todo');
+//       const request = objectStore.getAll();
 
-    const transaction = this.db.transaction('todo', 'readwrite');
-    console.log('transaction', transaction);
-    const objectStore = transaction.objectStore('todo');
-    console.log('objectStore', objectStore);
-  }
+//       request.onsuccess = () => {
+//         const todos = request.result;
+//         resolve(todos);
+//       };
+
+//       request.onerror = (err: any) => {
+//         reject(err);
+//       };
+//     });
+//   }
+
+//   async deleteAllTodos() {
+//     if (!this.db) {
+//       throw new Error('Database not initialized. Call createDatabase first.');
+//     }
+
+//     const transaction = this.db.transaction('todo', 'readwrite');
+//     const objectStore = transaction.objectStore('todo');
+//     const request = objectStore.openCursor();
+
+//     request.onsuccess = (event: any) => {
+//       const cursor = event.target.result;
+//       if (cursor) {
+//         objectStore.delete(cursor.primaryKey);
+//         cursor.continue();
+//       } else {
+//         console.log('All todos deleted successfully.');
+//       }
+//     };
+
+//     request.onerror = (err: any) => {
+//       console.error('Error deleting todos:', err);
+//     };
+//   }
+
+//   //   TESTING
+//   async logIndexedDb() {
+//     await this.createDatabase();
+//     console.log('logIndexedDb', this.db);
+
+//     if(this.db) {
+//         const transaction = this.db?.transaction('todo', 'readwrite');
+//         console.log('transaction', transaction);
+//         const objectStore = transaction.objectStore('todo');
+//         console.log('objectStore', objectStore);
+//     } else {
+//         console.log('no db, go offline to create db');
+//     }
+
+//   }
+
+
+  /**
+   * OLD VERSION NOT USING DEXIE
+   */
+
+
+//   listTodoItems() {
+//     return await db.todoItems
+//       .where({
+//         todoListId: this.todoList.id,
+//       })
+//       .toArray();
+//   }
 }

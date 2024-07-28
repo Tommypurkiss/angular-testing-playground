@@ -12,9 +12,10 @@ import {
   doc,
   onSnapshot,
 } from '@angular/fire/firestore';
-import { OfflineTodo, Todo } from '../../interfaces/todo';
+import { Todo } from '../../interfaces/todo';
 import { IndexedDbService } from '../indexedDb/indexed-db.service';
 import { getDocs, query, updateDoc, where } from '@firebase/firestore';
+import { db } from '../indexedDb/dexie-db';
 
 @Injectable({
   providedIn: 'root',
@@ -117,8 +118,9 @@ export class TodoService {
   async addTodoOffline(todo: Todo) {
     const userId = await this.getAuthUserId();
     if (userId) {
-      const offlineTodo: OfflineTodo = { ...todo, userId: userId };
-      this.indexedDbService.addTodo(offlineTodo);
+      const offlineTodo: Todo = { ...todo, userId: userId };
+      db.todoItems.add(offlineTodo);
+    //   this.indexedDbService.addTodo(offlineTodo);
     }
   }
 
@@ -133,22 +135,22 @@ export class TodoService {
   }
 
 
-  syncOfflineTodos() {
-    this.indexedDbService.getAllOfflineTodos().then((offlineTodos) => {
-      console.log('offlineTodos', offlineTodos);
-      offlineTodos.forEach(async (offlineTodo) => {
-        console.log('offlineTodo', offlineTodo);
-        const uid = getAuth().currentUser?.uid;
-        if (uid) {
-          const todoCollection = collection(this.firestore, 'offlineTodos');
-          const todoDoc = await addDoc(todoCollection, offlineTodo);
-          console.log('todoDoc', todoDoc);
-        }
+//   syncOfflineTodos() {
+//     this.indexedDbService.getAllOfflineTodos().then((offlineTodos) => {
+//       console.log('offlineTodos', offlineTodos);
+//       offlineTodos.forEach(async (offlineTodo) => {
+//         console.log('offlineTodo', offlineTodo);
+//         const uid = getAuth().currentUser?.uid;
+//         if (uid) {
+//           const todoCollection = collection(this.firestore, 'offlineTodos');
+//           const todoDoc = await addDoc(todoCollection, offlineTodo);
+//           console.log('todoDoc', todoDoc);
+//         }
 
-      });
-    });
-    this.indexedDbService.deleteAllTodos();
-  }
+//       });
+//     });
+//     this.indexedDbService.deleteAllTodos();
+//   }
 
   async getOfflineTodosByUserId(userId: string) {
     const offlineTodoCollection = collection(this.firestore, 'offlineTodos');
@@ -156,11 +158,5 @@ export class TodoService {
     const docs = (await getDocs(userQuery)).docs
     console.log('docs', docs);
     return of(docs)
-    // console.log('userQuery', userQuery);
-    // return getDocs(userQuery).pipe(
-    //   map(snapshot => {
-    //     return snapshot.docs.map(doc => doc.data() as Todo);
-    //   })
-    // );
   }
 }

@@ -10,10 +10,14 @@ export interface Todo {
     deletedAt?: Timestamp
     completed?: boolean
     completedAt?: Timestamp
+
+    //offline fields
+    userId?: string
+    offlineId?: string
 }
 
-export interface OfflineTodo {
-    value: string
-    userId: string
-    id?: string
-}
+// export interface OfflineTodo {
+//     value: string
+//     userId: string
+//     id?: string
+// }

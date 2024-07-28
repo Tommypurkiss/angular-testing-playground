@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
 import { CommonModule } from '@angular/common';
@@ -15,6 +15,8 @@ import { modules } from '../../modules/modules';
   styleUrl: './navbar.component.scss'
 })
 export class NavbarComponent {
+    @Input() onlineStatus$: Observable<boolean> = of(true)
+
     user$: Observable<User | null> = of(null)
 
     constructor(
