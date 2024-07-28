@@ -67,7 +67,7 @@ export class AuthService {
     signOut(this.auth)
       .then(() => {
         // console.log('User logged out successfully.');
-        this.router.navigate(['/landing']);
+        this.router.navigate(['/login']);
       })
       .catch((error) => {
         console.log('Error logging out:', error);

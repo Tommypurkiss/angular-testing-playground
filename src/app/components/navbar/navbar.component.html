@@ -1,10 +1,9 @@
-<div class="container">
+<div class="navbar-container">
     <ng-container *ngIf="authService.user$ | async; else nonLoggedInUser">
         <button style="padding: 4px; margin: 8px;" (click)="onSignOut()">logout</button>
     </ng-container>
     <ng-template #nonLoggedInUser>
         <ul>
-            <li><a routerLink="/landing" routerLinkActive="active" ariaCurrentWhenActive="page">Home</a></li>
             <li><a routerLink="/login" routerLinkActive="active" ariaCurrentWhenActive="page">Login</a></li>
             <li><a routerLink="/register" routerLinkActive="active" ariaCurrentWhenActive="page">Register</a></li>
             <!-- <li><a routerLink="/dashboard" routerLinkActive="active" ariaCurrentWhenActive="page">Dashboard page</a></li> -->

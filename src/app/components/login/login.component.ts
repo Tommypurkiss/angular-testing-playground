@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostBinding } from '@angular/core';
 import { AuthService } from '../../auth/auth.service';
 import { modules } from '../../modules/modules';
 
@@ -10,6 +10,8 @@ import { modules } from '../../modules/modules';
   styleUrl: './login.component.scss'
 })
 export class LoginComponent {
+    @HostBinding('class') class = 'h-full flex flex-col flex-1';
+
 
     loginEmail: string = ''
     loginPassword: string = ''

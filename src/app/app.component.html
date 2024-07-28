@@ -1,6 +1,10 @@
-<app-navbar></app-navbar>
-<div *ngIf="userHasOfflineTodos">
-{{userHasOfflineTodosMessage}}
-<button (click)="addOfflineTodosToUserTodos()">yes pls</button>
+<div class="h-full flex flex-col flex-1">
+    <app-navbar></app-navbar>
+    <div *ngIf="userHasOfflineTodos">
+        {{userHasOfflineTodosMessage}}
+        <button (click)="addOfflineTodosToUserTodos()">yes pls</button>
+    </div>
+    <div class="h-full flex flex-col flex-1">
+        <router-outlet />
+    </div>
 </div>
-<router-outlet />

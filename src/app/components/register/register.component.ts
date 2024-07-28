@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostBinding } from '@angular/core';
 import { AuthService } from '../../auth/auth.service';
 
 import { modules } from '../../modules/modules';
@@ -11,6 +11,7 @@ import { modules } from '../../modules/modules';
   styleUrl: './register.component.scss'
 })
 export class RegisterComponent {
+    @HostBinding('class') class = 'h-full flex flex-col flex-1';
 
     registerEmail: string = ''
     registerPassword: string = ''

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostBinding, OnInit } from '@angular/core';
 import { modules } from '../../modules/modules';
 import { TodoService } from '../../services/todo/todo.service';
 import { Observable, of } from 'rxjs';
@@ -14,6 +14,8 @@ import { IndexedDbService } from '../../services/indexedDb/indexed-db.service';
   styleUrl: './todo.component.scss',
 })
 export class TodoComponent implements OnInit {
+@HostBinding('class') class = 'h-full flex flex-col flex-1';
+
   todo: string = '';
   updatedTodo: string = '';
   selectedTodoId: string = '';

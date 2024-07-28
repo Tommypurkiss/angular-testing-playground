@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, HostBinding } from '@angular/core';
 import { initializeApp } from 'firebase/app';
 import { environment } from '../environment';
 import { Router, RouterOutlet } from '@angular/router';
@@ -18,6 +18,8 @@ import { OfflineTodo } from './interfaces/todo';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
+    @HostBinding('class') class = 'h-full';
+
   title = 'angular-testing-playground';
   userHasOfflineTodos: boolean = false;
   userHasOfflineTodosMessage = '';
