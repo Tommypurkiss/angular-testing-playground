@@ -16,6 +16,10 @@ export class LoginComponent {
     loginEmail: string = ''
     loginPassword: string = ''
 
+    loginPhoneNumber: string = ''
+    loginPhoneNumberCode: string = ''
+
+    loginWithNumberSent: boolean = false
 
     constructor(
         private authService: AuthService
@@ -24,6 +28,17 @@ export class LoginComponent {
 
     signInEmailAndPassword() {
         this.authService.loginWithEmailAndPassword(this.loginEmail, this.loginPassword)
+    }
+
+    signInWithPhoneNumber() {
+        console.log('signInWithPhoneNumber', this.loginPhoneNumber)
+        this.authService.loginWithPhoneNumber(this.loginPhoneNumber)
+        this.loginWithNumberSent = true
+    }
+
+    confirmSignInWithPhoneNumber() {
+        console.log('confirmMobileSignIn', this.loginPhoneNumberCode)
+        this.authService.confirmMobileSignIn(this.loginPhoneNumberCode)
     }
 
 

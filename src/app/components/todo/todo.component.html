@@ -1,30 +1,33 @@
 <div class="flex center align-center w-full h-full flex-1">
 
     <div class="flex flex-col center w-50">
-
+        <label for="">Create Todo</label>
         <div class="flex flex-col center">
             <input type="text" placeholder="enter todo here" [(ngModel)]="todo" />
             <button class="submit" (click)="addTodo()">Add</button>
         </div>
 
 
-        <ng-container *ngIf="todos$ | async as todos">
-            <div style="padding-top: 12px;" *ngFor="let todo of todos">
-                <div style="padding: 12px; border: 1px solid lightgrey; border-radius: 8px;" class="flex space-between">
-                    <input class="checkbox" type="checkbox" [checked]="todo.completed" (change)="completeTodo($event, todo.id)">
-                    <ng-container *ngIf="isEditing && todo.id === selectedTodoId; else nonEditing">
-                        <input type="text" [(ngModel)]="updatedTodo">
-                        <button (click)="editTodo(todo.id)">Save todo</button>
-                        <button (click)="toggleEditTodo(todo.id)">X</button>
-                    </ng-container>
-                    <ng-template #nonEditing>
-                        <span class="w-full todo-container" [style.textDecoration]="todo.completed ? 'line-through' : 'none'">{{todo.value}}</span>
-                        <button (click)="toggleEditTodo(todo.id)">Edit</button>
-                        <button (click)="deleteTodo(todo.id)">Delete</button>
-                    </ng-template>
+        <div style="margin-top: 20px;">
+            <label for="">Your Todos</label>
+            <ng-container *ngIf="todos$ | async as todos">
+                <div style="padding-top: 12px;" *ngFor="let todo of todos">
+                    <div style="padding: 12px; border: 1px solid lightgrey; border-radius: 8px;" class="flex space-between">
+                        <input class="checkbox" type="checkbox" [checked]="todo.completed" (change)="completeTodo($event, todo.id)">
+                        <ng-container *ngIf="isEditing && todo.id === selectedTodoId; else nonEditing">
+                            <input type="text" [(ngModel)]="updatedTodo">
+                            <button (click)="editTodo(todo.id)">Save todo</button>
+                            <button (click)="toggleEditTodo(todo.id)">X</button>
+                        </ng-container>
+                        <ng-template #nonEditing>
+                            <span class="w-full todo-container" [style.textDecoration]="todo.completed ? 'line-through' : 'none'">{{todo.value}}</span>
+                            <button (click)="toggleEditTodo(todo.id)">Edit</button>
+                            <button (click)="deleteTodo(todo.id)">Delete</button>
+                        </ng-template>
+                    </div>
                 </div>
-            </div>
-        </ng-container>
+            </ng-container>
+        </div>
 
         <div style="padding-top: 12px;">
             <button class="submit" (click)="logIndexedDb()">logIndexedDb</button>

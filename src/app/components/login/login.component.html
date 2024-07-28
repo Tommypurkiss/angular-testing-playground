@@ -1,9 +1,25 @@
 <div class="flex center align-center w-full h-full flex-1">
-    <div class="card flex flex-col center ">
+    <div class="card flex flex-col center">
 
-        <p>Login</p>
+        <p>Login with email & password</p>
         <input autocomplete="off" type="text" [(ngModel)]="loginEmail">
         <input autocomplete="off" type="password" [(ngModel)]="loginPassword">
         <button class="submit" (click)="signInEmailAndPassword()">Sign in </button>
+
+        <div style="border-top: 1px solid black;" class="w-full"></div>
+
+        <div >
+            <p>Login with phone number</p>
+            <input autocomplete="off" type="text" [(ngModel)]="loginPhoneNumber">
+            <button class="submit" (click)="signInWithPhoneNumber()">Sign in with number</button>
+
+        </div>
+        <div >
+            <p>Confirm login code</p>
+            <input autocomplete="off" type="text" [(ngModel)]="loginPhoneNumberCode">
+            <button class="submit" (click)="confirmSignInWithPhoneNumber()">Confirm sign in with number</button>
+        </div>
+
+        <div id="recaptcha"></div>
     </div>
 </div>
