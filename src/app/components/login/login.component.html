@@ -8,18 +8,17 @@
 
         <div style="border-top: 1px solid black;" class="w-full"></div>
 
-        <div >
+
+        @if (!loginWithNumberSmsSent) {
             <p>Login with phone number</p>
             <input autocomplete="off" type="text" [(ngModel)]="loginPhoneNumber">
             <button class="submit" (click)="signInWithPhoneNumber()">Sign in with number</button>
-
-        </div>
-        <div >
+        } @else {
             <p>Confirm login code</p>
             <input autocomplete="off" type="text" [(ngModel)]="loginPhoneNumberCode">
             <button class="submit" (click)="confirmSignInWithPhoneNumber()">Confirm sign in with number</button>
-        </div>
-
+            <a (click)="this.loginWithNumberSmsSent = false">Not working? Try again!</a>
+        }
         <div id="recaptcha"></div>
     </div>
 </div>

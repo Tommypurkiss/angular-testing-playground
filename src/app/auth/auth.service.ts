@@ -3,7 +3,7 @@ import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWith
 import { UserService } from '../services/user/user.service';
 import { User } from '../interfaces/user';
 import { Router } from '@angular/router';
-import { Observable, defer, from, of } from 'rxjs';
+import { Observable, combineLatest, defer, from, map, of, switchMap, take, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -21,14 +21,10 @@ export class AuthService {
   ) {
     this.user$ = new Observable<User | null>((observer) => {
       const unsubscribe = onAuthStateChanged(this.auth, async (user) => {
-        console.log('this.auth', this.auth)
-        console.log('userrrrr', user)
         if (user) {
-        //   console.log('User is signed in', user.uid);
           const userData = await this.userService.getUser(user.uid);
           observer.next(userData);
         } else {
-        //   console.log('User is signed out');
           observer.next(null);
         }
       });
@@ -64,7 +60,6 @@ export class AuthService {
   loginWithEmailAndPassword(email: string, password: string) {
     signInWithEmailAndPassword(this.auth, email, password)
       .then((userCredential) => {
-        // console.log('User logged in successfully.', userCredential.user.uid);
         this.router.navigate(['/dashboard']);
       })
       .catch((error) => {
@@ -72,68 +67,37 @@ export class AuthService {
       });
   }
 
+  loginWithPhoneNumber$(phoneNumber: string):Observable<boolean> {
+    this.recaptchaVerifier = new RecaptchaVerifier(this.auth, 'recaptcha', {});
 
-
-  loginWithPhoneNumber(phoneNumber: string) {
-    if (!this.recaptchaVerifier) {
-      this.recaptchaVerifier = new RecaptchaVerifier(this.auth, 'recaptcha', {
-        callback: (response: any) => {
-          console.log('reCAPTCHA solved, allow signInWithPhoneNumber.', response);
-          this.onMobileSignInSubmit(phoneNumber);
-        }
-      });
-      this.recaptchaVerifier.render().then(widgetId => {
-        console.log('reCAPTCHA rendered with widget ID:', widgetId);
-      });
-    } else {
-      this.onMobileSignInSubmit(phoneNumber);
-    }
+    return combineLatest(([this.recaptchaVerifier.verify()])).pipe(
+        map((recaptchaResult) => !!recaptchaResult.length ), // I dont think this is needed
+        switchMap(() => this.onMobileSignInSubmit$(phoneNumber))
+    )
   }
 
-  async onMobileSignInSubmit(phoneNumber: string): Promise<boolean> {
-    if (!this.recaptchaVerifier) {
-      console.error('reCAPTCHA verifier is not initialized');
-        return Promise.reject(false)
-    }
+  onMobileSignInSubmit$(phoneNumber: string): Observable<boolean> {
+    return defer(() => {
+        if (!this.recaptchaVerifier) {
+            return of(false)
+          }
 
-    return signInWithPhoneNumber(this.auth, phoneNumber, this.recaptchaVerifier)
-      .then((confirmationResult) => {
-        console.log('SMS sent', confirmationResult);
-        if(confirmationResult) {
-            this.recaptchaVerifier?.clear();
-            this.confirmationResult = confirmationResult;
-        }
-        return true
-      }).catch((error) => {
-        console.log('Error sending SMS:', error);
-        return false
-      });
+        return signInWithPhoneNumber(this.auth, phoneNumber, this.recaptchaVerifier)
+        .then((confirmationResult) => {
+          if(confirmationResult) {
+              this.recaptchaVerifier?.clear();
+              this.confirmationResult = confirmationResult;
+          }
+          return true
+        }).catch((error) => {
+          console.error(error)
+          return false
+        });
+    })
   }
-//   onMobileSignInSubmit$(phoneNumber: string): Observable<boolean> {
-//     return defer(() => {
-//         if (!this.recaptchaVerifier) {
-//             console.error('reCAPTCHA verifier is not initialized');
-//               return of(false)
-//           }
-
-//         return signInWithPhoneNumber(this.auth, phoneNumber, this.recaptchaVerifier)
-//         .then((confirmationResult) => {
-//           console.log('SMS sent', confirmationResult);
-//           if(confirmationResult) {
-//               this.recaptchaVerifier?.clear();
-//               this.confirmationResult = confirmationResult;
-//           }
-//           return true
-//         }).catch((error) => {
-//           console.log('Error sending SMS:', error);
-//           return false
-//         });
-//     })
-//   }
 
   confirmMobileSignIn(verificationCode: string, phoneNumber: string) {
     if (!this.confirmationResult) {
-      console.error('Confirmation result is not initialized');
       return;
     }
 

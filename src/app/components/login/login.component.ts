@@ -1,6 +1,7 @@
 import { Component, HostBinding } from '@angular/core';
 import { AuthService } from '../../auth/auth.service';
 import { modules } from '../../modules/modules';
+import { take, tap } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -12,32 +13,32 @@ import { modules } from '../../modules/modules';
 export class LoginComponent {
     @HostBinding('class') class = 'h-full flex flex-col flex-1';
 
-
+    // Login with email
     loginEmail: string = ''
     loginPassword: string = ''
 
+    // Login with phone number
     loginPhoneNumber: string = ''
     loginPhoneNumberCode: string = ''
-
-    loginWithNumberSent: boolean = false
+    loginWithNumberSmsSent: boolean = false
 
     constructor(
         private authService: AuthService
     ) {}
-
 
     signInEmailAndPassword() {
         this.authService.loginWithEmailAndPassword(this.loginEmail, this.loginPassword)
     }
 
     signInWithPhoneNumber() {
-        console.log('signInWithPhoneNumber', this.loginPhoneNumber)
-        this.authService.loginWithPhoneNumber(this.loginPhoneNumber)
-        this.loginWithNumberSent = true
+        this.authService.loginWithPhoneNumber$(this.loginPhoneNumber)
+        .pipe(
+            take(1),
+            tap((smsResult: boolean) => this.loginWithNumberSmsSent = smsResult)
+        ).subscribe()
     }
 
     confirmSignInWithPhoneNumber() {
-        console.log('confirmMobileSignIn', this.loginPhoneNumberCode)
         this.authService.confirmMobileSignIn(this.loginPhoneNumberCode, this.loginPhoneNumber)
     }
 
