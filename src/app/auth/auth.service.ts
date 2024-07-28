@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, RecaptchaVerifier, signInWithPhoneNumber, ConfirmationResult } from 'firebase/auth';
+import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, RecaptchaVerifier, signInWithPhoneNumber, ConfirmationResult, PhoneAuthProvider, UserCredential } from 'firebase/auth';
 import { UserService } from '../services/user/user.service';
 import { User } from '../interfaces/user';
 import { Router } from '@angular/router';
-import { Observable, from, of } from 'rxjs';
+import { Observable, defer, from, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -11,8 +11,8 @@ import { Observable, from, of } from 'rxjs';
 export class AuthService {
   auth = getAuth();
   user$: Observable<User | null>;
-    recaptchaVerifier: RecaptchaVerifier | undefined;
-    confirmationResult: ConfirmationResult | undefined;
+  recaptchaVerifier: RecaptchaVerifier | undefined;
+  confirmationResult: ConfirmationResult | undefined;
 
   constructor(
     private userService: UserService,
@@ -21,6 +21,8 @@ export class AuthService {
   ) {
     this.user$ = new Observable<User | null>((observer) => {
       const unsubscribe = onAuthStateChanged(this.auth, async (user) => {
+        console.log('this.auth', this.auth)
+        console.log('userrrrr', user)
         if (user) {
         //   console.log('User is signed in', user.uid);
           const userData = await this.userService.getUser(user.uid);
@@ -71,6 +73,7 @@ export class AuthService {
   }
 
 
+
   loginWithPhoneNumber(phoneNumber: string) {
     if (!this.recaptchaVerifier) {
       this.recaptchaVerifier = new RecaptchaVerifier(this.auth, 'recaptcha', {
@@ -87,41 +90,65 @@ export class AuthService {
     }
   }
 
-  onMobileSignInSubmit(phoneNumber: string) {
+  async onMobileSignInSubmit(phoneNumber: string): Promise<boolean> {
     if (!this.recaptchaVerifier) {
       console.error('reCAPTCHA verifier is not initialized');
-      return;
+        return Promise.reject(false)
     }
 
-    signInWithPhoneNumber(this.auth, phoneNumber, this.recaptchaVerifier)
+    return signInWithPhoneNumber(this.auth, phoneNumber, this.recaptchaVerifier)
       .then((confirmationResult) => {
         console.log('SMS sent', confirmationResult);
         if(confirmationResult) {
             this.recaptchaVerifier?.clear();
             this.confirmationResult = confirmationResult;
         }
+        return true
       }).catch((error) => {
         console.log('Error sending SMS:', error);
+        return false
       });
   }
+//   onMobileSignInSubmit$(phoneNumber: string): Observable<boolean> {
+//     return defer(() => {
+//         if (!this.recaptchaVerifier) {
+//             console.error('reCAPTCHA verifier is not initialized');
+//               return of(false)
+//           }
 
-  confirmMobileSignIn(verificationCode: string) {
+//         return signInWithPhoneNumber(this.auth, phoneNumber, this.recaptchaVerifier)
+//         .then((confirmationResult) => {
+//           console.log('SMS sent', confirmationResult);
+//           if(confirmationResult) {
+//               this.recaptchaVerifier?.clear();
+//               this.confirmationResult = confirmationResult;
+//           }
+//           return true
+//         }).catch((error) => {
+//           console.log('Error sending SMS:', error);
+//           return false
+//         });
+//     })
+//   }
+
+  confirmMobileSignIn(verificationCode: string, phoneNumber: string) {
     if (!this.confirmationResult) {
       console.error('Confirmation result is not initialized');
       return;
     }
 
     this.confirmationResult.confirm(verificationCode).then((result) => {
-        // User signed in successfully.
         console.log('User signed in successfully.', result);
-        const user = result.user;
-        console.log('user', user)
+        this.checkIfUserExists(result, phoneNumber)
+
         // ...
       }).catch((error) => {
         console.log('confirm error', error)
         // User couldn't sign in (bad verification code?)
         // ...
       });
+
+      this.router.navigate(['/dashboard']);
   }
 
   logout() {
@@ -133,5 +160,21 @@ export class AuthService {
       .catch((error) => {
         console.log('Error logging out:', error);
       });
+  }
+
+  private async checkIfUserExists(userCredential: UserCredential, phoneNumber: string) {
+
+    const result = await this.userService.getUser(userCredential.user.uid)
+
+    if(!result) {
+        const userData: User = {
+            displayName: '',
+            email: '',
+            uid: userCredential.user.uid,
+            phoneNumber: phoneNumber
+        }
+        this.userService.createUser(userData)
+
+    }
   }
 }

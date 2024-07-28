@@ -38,7 +38,7 @@ export class LoginComponent {
 
     confirmSignInWithPhoneNumber() {
         console.log('confirmMobileSignIn', this.loginPhoneNumberCode)
-        this.authService.confirmMobileSignIn(this.loginPhoneNumberCode)
+        this.authService.confirmMobileSignIn(this.loginPhoneNumberCode, this.loginPhoneNumber)
     }
 
 
