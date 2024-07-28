@@ -24,7 +24,7 @@ export class UserService {
     // Add implementation to get user data if needed
     const userCollection = collection(this.firestore, 'users')
     const userDoc = (await getDoc(doc(userCollection, userId))).data() as User
-    console.log('User data retrieved successfully', userDoc);
+    // console.log('User data retrieved successfully', userDoc);
     return userDoc
   }
 }

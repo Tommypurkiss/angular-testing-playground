@@ -19,8 +19,7 @@ import { NetworkService } from '../../services/network/network.service';
   styleUrl: './todo.component.scss',
 })
 export class TodoComponent implements OnInit {
-@HostBinding('class') class = 'h-full flex flex-col flex-1';
-
+  @HostBinding('class') class = 'h-full flex flex-col flex-1';
 
   todo: string = '';
   updatedTodo: string = '';
@@ -29,29 +28,20 @@ export class TodoComponent implements OnInit {
   isEditing: boolean = false;
   onlineStatus$ = this.networkService.checkNetworkStatus$();
 
-
-//   dexie & offline todos
-  offlinetodoItems$ = liveQuery(
-    () => db.todos.toArray()
-  ) as unknown as Observable<OfflineTodo[]>;
+  //   dexie & offline todos
+  offlinetodoItems$ = this.todoService.getOfflineTodos;
   selectedOfflineTodoId: number = 0;
   updatedOfflineTodo: string = '';
-
-
 
   constructor(
     private todoService: TodoService,
     private indexedDbService: IndexedDbService,
     private networkService: NetworkService
-
   ) {
     this.todos$ = this.todoService.getTodos(); // Initialize todos$ in the constructor
   }
 
   ngOnInit() {
-    this.offlinetodoItems$.subscribe((todoItems) => {
-        console.log('todoItems', todoItems);
-    })
     // db.table('todos').clear(); // Clear the todos table - only use when you want to clear the table
   }
 
@@ -79,45 +69,42 @@ export class TodoComponent implements OnInit {
   editTodo(todoId: string): void {
     this.isEditing = !this.isEditing;
     this.todoService.editTodo(todoId, this.updatedTodo);
-
   }
 
   deleteTodo(todoId: string): void {
     this.todoService.deleteTodo(todoId);
   }
 
+  //   offline
+  addOfflineTodo(): void {
+    this.todoService.addOfflineTodo(this.todo)
+    this.todo = '';
+  }
 
-//   offline
-    addOfflineTodo(): void {
-        const offlineTodo: OfflineTodo = { value: this.todo, completed: false };
-        db.todos.add(offlineTodo)
-    }
+  toggleEditOfflineTodo(todoId?: number): void {
+    if (!todoId) return;
 
-    toggleEditOfflineTodo(todoId?: number): void {
-        if(!todoId) return
+    console.log('toggleEditOfflineTodo', todoId);
+    this.isEditing = !this.isEditing;
+    this.selectedOfflineTodoId = todoId;
+  }
 
-        console.log('toggleEditOfflineTodo', todoId);
-        this.isEditing = !this.isEditing;
-        this.selectedOfflineTodoId = todoId;
-    }
+  editOfflineTodo(todoId: number): void {
+    this.isEditing = !this.isEditing;
+    db.todos.update(todoId, { value: this.updatedOfflineTodo });
+  }
 
-    editOfflineTodo(todoId: number): void {
-        this.isEditing = !this.isEditing;
-        db.todos.update(todoId, { value: this.updatedOfflineTodo });
-    }
+  deleteOfflineTodo(todoId?: number): void {
+    if (!todoId) return;
 
-    deleteOfflineTodo(todoId?: number): void {
-        if(!todoId) return
+    console.log('deleteOfflineTodo', todoId);
+    db.todos.delete(todoId);
+  }
 
-        console.log('deleteOfflineTodo', todoId);
-        // this.todoService.deleteTodo(todoId);
-        db.todos.delete(todoId);
-    }
+  completeOfflineTodo(event: Event, todoId?: number) {
+    if (!todoId) return;
 
-    completeOfflineTodo(event: Event, todoId?: number) {
-        if(!todoId) return
-
-        const isChecked = (event.target as HTMLInputElement).checked;
-        db.todos.update(todoId, { completed: isChecked });
-      }
+    const isChecked = (event.target as HTMLInputElement).checked;
+    db.todos.update(todoId, { completed: isChecked });
+  }
 }

@@ -1,9 +1,12 @@
 <div class="h-full flex flex-col flex-1">
     <app-navbar [onlineStatus$]="onlineStatus$"></app-navbar>
-    <!-- <div *ngIf="userHasOfflineTodos">
+
+    <!-- @if(onlineStatus$ | async; as onlineStatus === false) { -->
+    <div *ngIf="userHasOfflineTodos">
         {{userHasOfflineTodosMessage}}
-        <button (click)="addOfflineTodosToUserTodos()">yes pls</button>
-    </div> -->
+        <!-- <button (click)="addOfflineTodosToUserTodos()">yes pls</button> -->
+    </div>
+    <!-- } -->
     <div class="h-full flex flex-col flex-1">
         <router-outlet />
     </div>
