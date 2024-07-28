@@ -16,6 +16,7 @@ import { Todo } from '../../interfaces/todo';
 import { IndexedDbService } from '../indexedDb/indexed-db.service';
 import { getDocs, query, updateDoc, where } from '@firebase/firestore';
 import { db } from '../indexedDb/dexie-db';
+import { NetworkService } from '../network/network.service';
 
 @Injectable({
   providedIn: 'root',
@@ -25,9 +26,13 @@ export class TodoService {
 
   todos$: Observable<Todo[]> = of([]);
 
+  onlineStatus$ = this.networkService.checkNetworkStatus$();
+
+
   constructor(
     private authService: AuthService,
-    private indexedDbService: IndexedDbService
+    private indexedDbService: IndexedDbService,
+    private networkService: NetworkService
   ) {}
 
   async addTodo(todoData: Todo) {
@@ -61,14 +66,14 @@ export class TodoService {
     }
   }
 
-  async deleteOfflineTodo(todoId: string) {
-    const uid = getAuth().currentUser?.uid;
-    if (uid) {
-      const todoDoc = doc(collection(this.firestore, 'offlineTodos'), todoId);
-      console.log('deleteOfflineTodo - deleting offline todo', todoDoc, todoId)
-      await deleteDoc(todoDoc);
-    }
-  }
+//   async deleteOfflineTodo(todoId: string) {
+//     const uid = getAuth().currentUser?.uid;
+//     if (uid) {
+//       const todoDoc = doc(collection(this.firestore, 'offlineTodos'), todoId);
+//       console.log('deleteOfflineTodo - deleting offline todo', todoDoc, todoId)
+//       await deleteDoc(todoDoc);
+//     }
+//   }
 
   completeTodo( isChecked: boolean, todoId: string) {
     console.log('isChecked', isChecked);
@@ -115,14 +120,14 @@ export class TodoService {
   }
 
   //   OFFLINE STUFF
-  async addTodoOffline(todo: Todo) {
-    const userId = await this.getAuthUserId();
-    if (userId) {
-      const offlineTodo: Todo = { ...todo, userId: userId };
-    //   db.todoItems.add(offlineTodo);
-    //   this.indexedDbService.addTodo(offlineTodo);
-    }
-  }
+//   async addTodoOffline(todo: Todo) {
+//     const userId = await this.getAuthUserId();
+//     if (userId) {
+//       const offlineTodo: Todo = { ...todo, userId: userId };
+//     //   db.todoItems.add(offlineTodo);
+//     //   this.indexedDbService.addTodo(offlineTodo);
+//     }
+//   }
 
   async getAuthUserId() {
     const currentAuthUser = this.authService.auth;

@@ -11,13 +11,12 @@ export interface Todo {
     completed?: boolean
     completedAt?: Timestamp
 
-    //offline fields
-    userId?: string
-    offlineId?: string
 }
 
-// export interface OfflineTodo {
-//     value: string
-//     userId: string
-//     id?: string
-// }
+export interface OfflineTodo {
+    value: string
+    id?: number
+    completed?: boolean
+    edited?: boolean
+    userId?: string
+}

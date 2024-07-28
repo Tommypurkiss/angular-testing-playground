@@ -1,47 +1,21 @@
 import Dexie, { Table } from 'dexie';
-
-export interface TodoList {
-  id?: number;
-  title: string;
-}
-export interface TodoItem {
-  id?: number;
-  todoListId: number;
-  title: string;
-  done?: boolean;
-}
+import { OfflineTodo } from '../../interfaces/todo';
 
 export class AppDB extends Dexie {
-  todoItems!: Table<TodoItem, number>;
-  todoLists!: Table<TodoList, number>;
+
+  todos!: Table<OfflineTodo, number>;
 
   constructor() {
     super('ngdexieliveQuery');
+    //  Version 3 is the version from https://dexie.org/docs/Tutorial/Angular
     this.version(3).stores({
-      todoLists: '++id',
-      todoItems: '++id, todoListId',
+        todos: '++id',
     });
     this.on('populate', () => this.populate());
   }
 
+//   Leaving empty but you can pre populate the database here
   async populate() {
-    const todoListId = await db.todoLists.add({
-      title: 'To Do Today',
-    });
-    await db.todoItems.bulkAdd([
-      {
-        todoListId,
-        title: 'Feed the birds',
-      },
-      {
-        todoListId,
-        title: 'Watch a movie',
-      },
-      {
-        todoListId,
-        title: 'Have some sleep',
-      },
-    ]);
   }
 }
 
