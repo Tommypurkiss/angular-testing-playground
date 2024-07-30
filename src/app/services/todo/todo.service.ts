@@ -170,12 +170,22 @@ export class TodoService {
       .subscribe();
   }
 
-  get getAllOfflineTodos(): Observable<OfflineTodo[]> {
-    return defer(async () => {
-        const offlineTodosCollection = collection(this.firestore, 'offlineTodos')
-        return (await getDocs(offlineTodosCollection)).docs.map((doc) => doc.data() as OfflineTodo);
-    });
-
+  getAllOfflineTodos(): Observable<OfflineTodo[]> {
+    // return defer(async () => {
+    //     const offlineTodosCollection = collection(this.firestore, 'offlineTodos')
+    //     return (await getDocs(offlineTodosCollection)).docs.map((doc) => doc.data() as OfflineTodo);
+    // });
+    const offlineTodosCollection = collection(this.firestore, 'offlineTodos')
+    return new Observable<OfflineTodo[]>((observer) => {
+        const unsubscribe = onSnapshot(offlineTodosCollection, (querySnapshot) => {
+          const todos: OfflineTodo[] = [];
+          querySnapshot.forEach((doc) => {
+            todos.push({ ...doc.data() } as OfflineTodo);
+          });
+          observer.next(todos);
+        });
+        return () => unsubscribe();
+      });
   }
 
   getOfflineTodosByUserId$(): Observable<

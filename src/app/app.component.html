@@ -4,7 +4,7 @@
     <!-- @if(onlineStatus$ | async; as onlineStatus === false) { -->
     <div *ngIf="userHasOfflineTodos">
         <p>
-            {{userHasOfflineTodosMessage}}
+            {{userHasOfflineTodosMessage}} | Note to self: have to refresh to get updated number :chloe-side-eye:
         </p>
         <button (click)="addOfflineTodosToUserTodos()">yes pls</button>
     </div>

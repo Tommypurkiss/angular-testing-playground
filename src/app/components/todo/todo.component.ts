@@ -39,7 +39,7 @@ export class TodoComponent  {
     private networkService: NetworkService
   ) {
     this.todos$ = this.todoService.getTodos(); // Initialize todos$ in the constructor
-    // this.offlineTodosFromOfflineTodosCollection = this.todoService.getAllOfflineTodos
+    this.offlineTodosFromOfflineTodosCollection = this.todoService.getAllOfflineTodos()
   }
 
   async addTodo(): Promise<void> {
@@ -105,7 +105,7 @@ export class TodoComponent  {
     db.todos.update(todoId, { completed: isChecked });
   }
 
-  showOfflineTodos() {
-    this.offlineTodosFromOfflineTodosCollection = this.todoService.getAllOfflineTodos
-  }
+//   showOfflineTodos() {
+//     this.offlineTodosFromOfflineTodosCollection = this.todoService.getAllOfflineTodos
+//   }
 }

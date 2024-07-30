@@ -93,11 +93,10 @@
         <div>
             <p>
                 Firebase offlineTodos collection deetz: (After going back online you'll see the offlineTodos added to
-                this collection) ps. sorry u have to manually click to see changes
+                this collection)
             </p>
-            <button (click)="showOfflineTodos()">show offlineTodos</button>
             <pre style="height: 200px; overflow: auto;" class="w-full">
-                {{offlineTodosFromOfflineTodosCollection | async | json}}
+             {{offlineTodosFromOfflineTodosCollection | async | json}}
             </pre>
         </div>
     </div>
