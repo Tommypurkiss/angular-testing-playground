@@ -171,19 +171,11 @@ export class TodoService {
   }
 
   get getAllOfflineTodos(): Observable<OfflineTodo[]> {
-    console.log('getAllOfflineTodos');
     return defer(async () => {
         const offlineTodosCollection = collection(this.firestore, 'offlineTodos')
-        console.log('offlineTodosCollection', offlineTodosCollection);
         return (await getDocs(offlineTodosCollection)).docs.map((doc) => doc.data() as OfflineTodo);
     });
-    // const offlineTodosCollection = collection(this.firestore, 'offlineTodos')
-    // return from(getDocs(offlineTodosCollection)).pipe(
-    //     map((querySnapshot) => {
-    //         console.log('querySnapshot', querySnapshot);
-    //         return querySnapshot.docs.map((doc) => doc.data() as OfflineTodo)
-    //     })
-    // )
+
   }
 
   getOfflineTodosByUserId$(): Observable<
