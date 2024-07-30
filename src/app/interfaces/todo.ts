@@ -10,6 +10,7 @@ export interface Todo {
     deletedAt?: Timestamp
     completed?: boolean
     completedAt?: Timestamp
+    userId?: string
 
 }
 

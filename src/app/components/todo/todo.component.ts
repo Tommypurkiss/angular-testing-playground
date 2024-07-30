@@ -1,7 +1,7 @@
 import { Component, HostBinding, OnInit } from '@angular/core';
 import { modules } from '../../modules/modules';
 import { TodoService } from '../../services/todo/todo.service';
-import { from, Observable, of } from 'rxjs';
+import { from, map, Observable, of, switchMap, tap } from 'rxjs';
 import { OfflineTodo, Todo } from '../../interfaces/todo';
 // import { getAuth } from 'firebase/auth';
 import { IndexedDbService } from '../../services/indexedDb/indexed-db.service';
@@ -18,7 +18,7 @@ import { NetworkService } from '../../services/network/network.service';
   templateUrl: './todo.component.html',
   styleUrl: './todo.component.scss',
 })
-export class TodoComponent implements OnInit {
+export class TodoComponent  {
   @HostBinding('class') class = 'h-full flex flex-col flex-1';
 
   todo: string = '';
@@ -29,20 +29,17 @@ export class TodoComponent implements OnInit {
   onlineStatus$ = this.networkService.checkNetworkStatus$();
 
   //   dexie & offline todos
-  offlinetodoItems$ = this.todoService.getOfflineTodos;
+  offlinetodoItems$ = this.todoService.getOfflineTodosFromDexie;
   selectedOfflineTodoId: number = 0;
   updatedOfflineTodo: string = '';
+  offlineTodosFromOfflineTodosCollection: Observable<OfflineTodo[]> = of([]);
 
   constructor(
     private todoService: TodoService,
-    private indexedDbService: IndexedDbService,
     private networkService: NetworkService
   ) {
     this.todos$ = this.todoService.getTodos(); // Initialize todos$ in the constructor
-  }
-
-  ngOnInit() {
-    // db.table('todos').clear(); // Clear the todos table - only use when you want to clear the table
+    // this.offlineTodosFromOfflineTodosCollection = this.todoService.getAllOfflineTodos
   }
 
   async addTodo(): Promise<void> {
@@ -52,7 +49,7 @@ export class TodoComponent implements OnInit {
     this.todo = '';
   }
 
-  completeTodo(event: Event, todoId: string) {
+  completeTodo(event: Event, todoId: string): void {
     const isChecked = (event.target as HTMLInputElement).checked;
     this.todoService.completeTodo(isChecked, todoId);
   }
@@ -77,7 +74,7 @@ export class TodoComponent implements OnInit {
 
   //   offline
   addOfflineTodo(): void {
-    this.todoService.addOfflineTodo(this.todo)
+    this.todoService.addOfflineTodo(this.todo);
     this.todo = '';
   }
 
@@ -101,10 +98,14 @@ export class TodoComponent implements OnInit {
     db.todos.delete(todoId);
   }
 
-  completeOfflineTodo(event: Event, todoId?: number) {
+  completeOfflineTodo(event: Event, todoId?: number): void {
     if (!todoId) return;
 
     const isChecked = (event.target as HTMLInputElement).checked;
     db.todos.update(todoId, { completed: isChecked });
+  }
+
+  showOfflineTodos() {
+    this.offlineTodosFromOfflineTodosCollection = this.todoService.getAllOfflineTodos
   }
 }

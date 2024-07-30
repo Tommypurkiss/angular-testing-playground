@@ -3,8 +3,10 @@
 
     <!-- @if(onlineStatus$ | async; as onlineStatus === false) { -->
     <div *ngIf="userHasOfflineTodos">
-        {{userHasOfflineTodosMessage}}
-        <!-- <button (click)="addOfflineTodosToUserTodos()">yes pls</button> -->
+        <p>
+            {{userHasOfflineTodosMessage}}
+        </p>
+        <button (click)="addOfflineTodosToUserTodos()">yes pls</button>
     </div>
     <!-- } -->
     <div class="h-full flex flex-col flex-1">

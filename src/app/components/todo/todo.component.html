@@ -1,74 +1,104 @@
-<div class="flex flex-col center align-center w-full h-full flex-1">
+<div class="flex center align-center w-full h-full flex-1">
+    <!-- flex-col -->
 
-    <div class="flex flex-col center w-50 ">
+    <div class="flex flex-col center w-70 p-2 ">
         <label style="margin-top: 10px;">Create Todo</label>
         <div class="flex flex-col center">
             <input type="text" placeholder="enter todo here" [(ngModel)]="todo" />
             @if (onlineStatus$ | async) {
-                <button class="submit" (click)="addTodo()">Add</button>
+            <button class="submit" (click)="addTodo()">Add</button>
             } @else {
-                <button class="submit" (click)="addOfflineTodo()">Add</button>
+            <button class="submit" (click)="addOfflineTodo()">Add</button>
             }
         </div>
-
-        @if (onlineStatus$ | async) {
+        <div style="max-height: 500px; overflow: auto;">
+            @if (onlineStatus$ | async) {
             <!-- IF ONLINE -->
             <div style="margin: 20px 0px;">
-                <label for="">Your Todos</label>
-                <ng-container *ngIf="todos$ | async as todos">
-                    <div style="padding-top: 12px;" *ngFor="let todo of todos">
-                        <div style="padding: 12px; border: 1px solid lightgrey; border-radius: 8px;" class="flex space-between">
-                            <input class="checkbox" type="checkbox" [checked]="todo.completed" (change)="completeTodo($event, todo.id)">
-                            <ng-container *ngIf="isEditing && todo.id === selectedTodoId; else nonEditing">
-                                <input type="text" [(ngModel)]="updatedTodo">
-                                <button (click)="editTodo(todo.id)">Save todo</button>
-                                <button (click)="toggleEditTodo(todo.id)">X</button>
-                            </ng-container>
-                            <ng-template #nonEditing>
-                                <span class="w-full todo-container" [style.textDecoration]="todo.completed ? 'line-through' : 'none'">{{todo.value}}</span>
-                                <button (click)="toggleEditTodo(todo.id)">Edit</button>
-                                <button (click)="deleteTodo(todo.id)">Delete</button>
-                            </ng-template>
-                        </div>
+                @if(todos$ | async; as todos) {
+                <label for="">Your Todos {{ todos.length }}</label>
+
+                @for (todo of todos; track $index) {
+                <div style="padding-top: 12px;">
+
+                    <div style="padding: 12px; border: 1px solid lightgrey; border-radius: 8px;"
+                        class="flex space-between">
+                        <input class="checkbox" type="checkbox" [checked]="todo.completed"
+                            (change)="completeTodo($event, todo.id)">
+                        <ng-container *ngIf="isEditing && todo.id === selectedTodoId; else nonEditing">
+                            <input type="text" [(ngModel)]="updatedTodo">
+                            <button (click)="editTodo(todo.id)">Save todo</button>
+                            <button (click)="toggleEditTodo(todo.id)">X</button>
+                        </ng-container>
+                        <ng-template #nonEditing>
+                            <span class="w-full todo-container"
+                                [style.textDecoration]="todo.completed ? 'line-through' : 'none'">{{todo.value}}</span>
+                            <button (click)="toggleEditTodo(todo.id)">Edit</button>
+                            <button (click)="deleteTodo(todo.id)">Delete</button>
+                        </ng-template>
                     </div>
-                </ng-container>
+                </div>
+                }
+
+                }
+
+
             </div>
 
-        } @else {
+            } @else {
             <!-- IF OFFLINE -->
             <div style="margin: 20px 0px;">
-                <label for="">Your Offline Todos</label>
                 @if (offlinetodoItems$ | async; as offlineTodos) {
-                    @for (todo of offlineTodos; track $index) {
-                        <div style="padding-top: 12px;" >
-                            @if(todo) {
+                <label for="">Your Offline Todos {{offlineTodos.length}}</label>
+                @for (todo of offlineTodos; track $index) {
+                <div style="padding-top: 12px;">
+                    @if(todo) {
 
-                                <div style="padding: 12px; border: 1px solid lightgrey; border-radius: 8px;" class="flex space-between">
-                                    <input class="checkbox" type="checkbox" [checked]="todo.completed" (change)="completeOfflineTodo($event, todo.id)">
-                                    <ng-container *ngIf="isEditing && todo.id === selectedOfflineTodoId; else nonEditing">
-                                        <input type="text" [(ngModel)]="updatedOfflineTodo">
-                                        <button (click)="editOfflineTodo(todo.id)">Save todo</button>
-                                        <button (click)="toggleEditOfflineTodo(todo.id)">X</button>
-                                    </ng-container>
-                                    <ng-template #nonEditing>
-                                        <span class="w-full todo-container" [style.textDecoration]="todo.completed ? 'line-through' : 'none'">{{todo.value}}</span>
-                                        <button (click)="toggleEditOfflineTodo(todo.id)">Edit</button>
-                                        <button (click)="deleteOfflineTodo(todo.id)">Delete</button>
-                                    </ng-template>
-                                </div>
-                            }
-                        </div>
+                    <div style="padding: 12px; border: 1px solid lightgrey; border-radius: 8px;"
+                        class="flex space-between">
+                        <input class="checkbox" type="checkbox" [checked]="todo.completed"
+                            (change)="completeOfflineTodo($event, todo.id)">
+                        <ng-container *ngIf="isEditing && todo.id === selectedOfflineTodoId; else nonEditing">
+                            <input type="text" [(ngModel)]="updatedOfflineTodo">
+                            <button (click)="editOfflineTodo(todo.id)">Save todo</button>
+                            <button (click)="toggleEditOfflineTodo(todo.id)">X</button>
+                        </ng-container>
+                        <ng-template #nonEditing>
+                            <span class="w-full todo-container"
+                                [style.textDecoration]="todo.completed ? 'line-through' : 'none'">{{todo.value}}</span>
+                            <button (click)="toggleEditOfflineTodo(todo.id)">Edit</button>
+                            <button (click)="deleteOfflineTodo(todo.id)">Delete</button>
+                        </ng-template>
+                    </div>
                     }
+                </div>
+                }
                 }
             </div>
 
-        }
+            }
+        </div>
     </div>
 
-    <div class="w-50">
-        <p>Dexie deetz:</p>
-        <pre style="border:1px solid black; height: 200px; overflow: auto;" class="w-full">
-            offlinetodoItems$ {{offlinetodoItems$ | async | json}}
-        </pre>
+    <div class="w-30 p-2 flex flex-col">
+        <div class="w-full">
+            <p>Dexie deetz: (Go offline and add todos to see them appear here - then when you go back online they will
+                be
+                removed & stored in a firestore collection 'offlineTodos')</p>
+            <pre style="height: 200px; overflow: auto;" class="w-full">
+                {{offlinetodoItems$ | async | json}}
+            </pre>
+        </div>
+
+        <div>
+            <p>
+                Firebase offlineTodos collection deetz: (After going back online you'll see the offlineTodos added to
+                this collection) ps. sorry u have to manually click to see changes
+            </p>
+            <button (click)="showOfflineTodos()">show offlineTodos</button>
+            <pre style="height: 200px; overflow: auto;" class="w-full">
+                {{offlineTodosFromOfflineTodosCollection | async | json}}
+            </pre>
+        </div>
     </div>
 </div>

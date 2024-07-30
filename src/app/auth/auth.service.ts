@@ -32,6 +32,10 @@ export class AuthService {
     });
   }
 
+  get getAuthUserId(): string | undefined {
+    return this.auth.currentUser?.uid;
+  }
+
   isLoggedIn(): boolean {
     return !!this.auth.currentUser;
   }
